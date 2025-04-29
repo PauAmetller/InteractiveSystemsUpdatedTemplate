@@ -26,17 +26,19 @@ public class doublescreenCameramanager : MonoBehaviour
             }
         }
 
+        correctCameraAndBlendPos();
+
 
         Camera cam1 = transform.GetChild(0).GetComponent<Camera>();
         Camera cam2 = transform.GetChild(1).GetComponent<Camera>();
 
-        correctBlendScale(cam1); //Cam be any of the 2 cameras (both cameras must always be in the same position
+        correctBlendScale();
 
         Vector3 lookDirection = cameraLookDirectionVector(cam1);
         float yourShiftY = GetViewMatrixShiftY(cam1, lookDirection);
      
         float originalAspect = 9f / 16f;
-        float targetAspect = getTargetAspect(cam1);
+        float targetAspect = getTargetAspect();
 
         float scaleFactor = targetAspect / originalAspect;
         yourShiftY /= scaleFactor;
@@ -53,28 +55,37 @@ public class doublescreenCameramanager : MonoBehaviour
         transform.GetChild(1).GetComponent<Camera>().backgroundColor = backgroundColor;
     }
 
-    private void correctBlendScale(Camera cam)
+    private void correctBlendScale()
     {
-        Vector3 camPos = cam.transform.position;
+        Vector3 camPos = this.transform.position;
         Vector3 blendPos = blend.transform.position;
         Vector3 planePos = plane.transform.position;
 
         float cameraBlendRatio = Vector3.Distance(camPos, blendPos) / Vector3.Distance(camPos, planePos);
 
-        float blendScale = (percentageOfCameraOverlap / 10f) * cameraBlendRatio; ;
+        float blendScale = (percentageOfCameraOverlap / 10f) * cameraBlendRatio;
 
         Vector3 newScale = blend.transform.localScale;
         newScale.z = blendScale;
         blend.transform.localScale = newScale;
     }
 
-    private float getTargetAspect(Camera cam)
+    private void correctCameraAndBlendPos()
     {
-        Vector3 planeScale = plane.transform.localScale * 10;
-        Vector3 bottomCameraVision = new Vector3(0f, 0f, -(planeScale.z / 2)) + plane.transform.position;
-        Vector3 topCameraVision = new Vector3(0f, 0f, (planeScale.z / 2) * (percentageOfCameraOverlap / 100)) + plane.transform.position;
-        Vector3 leftCameraVision = new Vector3(-(planeScale.x / 2), 0f, 0f) + plane.transform.position;
-        Vector3 rightCameraVision = new Vector3(planeScale.x / 2, 0f, 0f) + plane.transform.position;
+        Vector3 plane_pos = plane.transform.position;
+        Vector3 plane_scale = plane.transform.lossyScale;
+
+        this.transform.position = new Vector3(0f, plane_scale.x * 13.9f, 0f) + plane_pos;
+        blend.transform.position = new Vector3(0f, ((this.transform.position.y - plane_pos.y) / 2.0f) , 0f) + plane_pos;
+    }
+
+    private float getTargetAspect()
+    {
+        Vector3 planeScale = plane.transform.lossyScale * 10;
+        Vector3 bottomCameraVision = new Vector3(0f, 0f, -(planeScale.z / 2));
+        Vector3 topCameraVision = new Vector3(0f, 0f, (planeScale.z / 2) * (percentageOfCameraOverlap / 100));
+        Vector3 leftCameraVision = new Vector3(-(planeScale.x / 2), 0f, 0f);
+        Vector3 rightCameraVision = new Vector3(planeScale.x / 2, 0f, 0f);
 
         float scale = Vector3.Distance(topCameraVision, bottomCameraVision) / Vector3.Distance(leftCameraVision, rightCameraVision);
 
@@ -83,9 +94,10 @@ public class doublescreenCameramanager : MonoBehaviour
 
     private Vector3 cameraLookDirectionVector(Camera cam)
     {
-        Vector3 planeScale = plane.transform.localScale * 10;
-        Vector3 bottomCameraVision = new Vector3(0f, 0f, -(planeScale.z / 2)) + plane.transform.position;
-        Vector3 topCameraVision = new Vector3(0f, 0f, (planeScale.z / 2) * (percentageOfCameraOverlap / 100)) + plane.transform.position;
+        Vector3 plane_pos = plane.transform.position;
+        Vector3 planeScale = plane.transform.lossyScale * 10;
+        Vector3 bottomCameraVision = new Vector3(0f, 0f, -(planeScale.z / 2)) + plane_pos;
+        Vector3 topCameraVision = new Vector3(0f, 0f, (planeScale.z / 2) * (percentageOfCameraOverlap / 100)) + plane_pos;
 
         Vector3 middleCameraVision = (topCameraVision + bottomCameraVision) / 2;
 
@@ -107,12 +119,10 @@ public class doublescreenCameramanager : MonoBehaviour
     {
         Vector3 pointInWorldSpace = cam.transform.position + lookDirection;
 
-        Vector3 screenPoint = cam.WorldToScreenPoint(pointInWorldSpace);
+        Vector3 viewportPoint = cam.WorldToViewportPoint(pointInWorldSpace);
 
-        float screenHeight = Screen.height;
-        float normalizedY = (screenPoint.y / screenHeight) * 2 - 1;
+        float normalizedY = (viewportPoint.y * 2f) - 1f;
 
         return normalizedY;
     }
-
 }
