@@ -37,28 +37,20 @@ public class PowerUpLogic : MonoBehaviour
             return;
         }
 
-        GameObject powerUpToSpawn = powerUpPrefabs[Random.Range(0, powerUpPrefabs.Length)];
-        Transform spawnLocation = spawnPoints[Random.Range(0, spawnPoints.Length)];
+        GameObject prefab = powerUpPrefabs[Random.Range(0, powerUpPrefabs.Length)];
+        Transform spawnPoint = spawnPoints[Random.Range(0, spawnPoints.Length)];
 
-        Debug.Log($"Spawning power-up: {powerUpToSpawn.name} at {spawnLocation.position}");
-
-        currentPowerUp = Instantiate(powerUpToSpawn, spawnLocation.position, Quaternion.identity);
-
-        if (currentPowerUp == null)
-        {
-            Debug.LogError("Failed to instantiate power-up!");
-            return;
-        }
+        currentPowerUp = Instantiate(prefab, spawnPoint.position, Quaternion.identity);
 
         PowerUp powerUpScript = currentPowerUp.GetComponent<PowerUp>();
-
-        if (powerUpScript == null)
+        if (powerUpScript != null)
         {
-            Debug.LogError($"PowerUp script not found on: {currentPowerUp.name}");
-            return;
+            powerUpScript.onCollected += HandlePowerUpCollected;
         }
-
-        powerUpScript.onCollected += HandlePowerUpCollected;
+        else
+        {
+            Debug.LogError("PowerUp script not found on: " + currentPowerUp.name);
+        }
     }
 
     void HandlePowerUpCollected()

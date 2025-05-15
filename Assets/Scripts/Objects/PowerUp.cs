@@ -14,15 +14,9 @@ public class PowerUp : MonoBehaviour
         transform.Rotate(new Vector3(15, 30, 45) * rotationSpeed * Time.deltaTime);
     }
 
-    void OnTriggerEnter(Collider other)
+    public void Collect()
     {
-        if (other.CompareTag("Player"))
-        {
-            // Trigger the collected event (notifies manager)
-            onCollected?.Invoke();
-
-            // Destroy this power-up
-            Destroy(gameObject);
-        }
+        onCollected?.Invoke();
+        Destroy(gameObject);
     }
 }
