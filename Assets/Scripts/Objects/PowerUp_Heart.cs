@@ -7,8 +7,20 @@ public class PowerUp_Heart : MonoBehaviour
         if (!other.CompareTag("PlayerCollider"))
             return;
 
-        Transform root = other.transform.root;
-        PlayerCollisions playerCollisions = root.GetComponentInChildren<PlayerCollisions>();
+        // Go up the hierarchy until we find the object tagged "Direction1" (the individual player)
+        Transform current = other.transform;
+        while (current != null && !current.CompareTag("Direction1"))
+        {
+            current = current.parent;
+        }
+
+        if (current == null)
+        {
+            Debug.LogWarning("Player root not found.");
+            return;
+        }
+
+        PlayerCollisions playerCollisions = current.GetComponentInChildren<PlayerCollisions>();
 
         if (playerCollisions != null && playerCollisions.lifePoints != null)
         {
@@ -19,7 +31,6 @@ public class PowerUp_Heart : MonoBehaviour
             }
         }
 
-        // Call the base Collect() method so PowerUpLogic can respond
-        GetComponent<PowerUp>()?.Collect();
+        GetComponent<PowerUp>()?.Collect(current);
     }
 }

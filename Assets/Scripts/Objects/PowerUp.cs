@@ -14,8 +14,9 @@ public class PowerUp : MonoBehaviour
         transform.Rotate(new Vector3(15, 30, 45) * rotationSpeed * Time.deltaTime);
     }
 
-    public void Collect()
+    public void Collect(Transform collector)
     {
+        Debug.Log($"Power-up collected by: {collector.name}");
         onCollected?.Invoke();
         Destroy(gameObject);
     }
