@@ -13,6 +13,7 @@ TagManager:
   - HighGround
   - Walls
   - Bullet
+  - PowerUp
   layers:
   - Default
   - TransparentFX
