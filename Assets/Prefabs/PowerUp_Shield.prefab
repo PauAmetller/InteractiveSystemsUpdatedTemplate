@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 6554368104898109614}
   - component: {fileID: 7582410726804207814}
   - component: {fileID: 6969547118579471784}
+  - component: {fileID: 925155363978411029}
   m_Layer: 0
   m_Name: PowerUp_Shield
   m_TagString: PowerUp
@@ -112,7 +113,7 @@ BoxCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 0.04, y: 0.05803677, z: 0.04}
+  m_Size: {x: 0.02, y: 0.03803677, z: 0.02}
   m_Center: {x: -4.6566126e-10, y: 0.0007060167, z: 0}
 --- !u!54 &6969547118579471784
 Rigidbody:
@@ -130,3 +131,15 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 112
   m_CollisionDetection: 0
+--- !u!114 &925155363978411029
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7000559974619993349}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 43e2fb3a9dd85174397569e7d2c7e682, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
