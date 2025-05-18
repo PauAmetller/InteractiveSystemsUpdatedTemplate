@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System;
 using UnityEngine;
+using Newtonsoft.Json;
+using System.IO;
 
 public class doublescreenCameramanager : MonoBehaviour
 {
@@ -10,8 +12,16 @@ public class doublescreenCameramanager : MonoBehaviour
     public GameObject blend;
     public Color backgroundColor;
 
-    [Range(0, 100)]
-    public float percentageOfCameraOverlap;
+    [Header("Use percentatge of overlap from the overlap file")]
+    [SerializeField] private bool UseOverlapFile;
+    [SerializeField, Range(0f, 100f)]
+    private float percentageOfCameraOverlap;
+
+    [SerializeField] private string overlapGetFilePath;
+    private string overlapSaveFileName = "overlapCalibration";
+    private string fullOverlapSaveFilePath;
+
+    public class OverlapData { public float percentatgeOfOverlap; }
     /// <summary>
     /// This script just open the two screens on the same allication
     /// </summary>
@@ -24,6 +34,19 @@ public class doublescreenCameramanager : MonoBehaviour
             {
                 Display.displays[i].Activate();
             }
+        }
+
+        //assign calibration save File
+        if (string.IsNullOrEmpty(overlapGetFilePath))
+        {
+            overlapGetFilePath = Application.persistentDataPath;
+        }
+        fullOverlapSaveFilePath = overlapGetFilePath + "/" + overlapSaveFileName + ".json";
+
+        if (UseOverlapFile)
+        {
+            //load calibration if saved
+            LoadOverlapJson();
         }
 
         correctCameraAndBlendPos();
@@ -126,5 +149,21 @@ public class doublescreenCameramanager : MonoBehaviour
         float normalizedY = (viewportPoint.y * 2f) - 1f;
 
         return normalizedY;
+    }
+
+    private void LoadOverlapJson()
+    {
+        Debug.Log("Fetching file at: " + fullOverlapSaveFilePath);
+
+        try
+        {
+            string jsonString = File.ReadAllText(fullOverlapSaveFilePath);
+            OverlapData OverlapData = JsonConvert.DeserializeObject<OverlapData>(jsonString);
+            percentageOfCameraOverlap = OverlapData.percentatgeOfOverlap;
+        }
+        catch (Exception)
+        {
+            Debug.Log("Overlap file not found");
+        }
     }
 }
